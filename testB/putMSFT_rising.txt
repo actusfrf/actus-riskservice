@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{"riskFactorID": "MSFT_rising","marketObjectCode": "MSFT","base": 1.0, "data":[{"time":"2023-06-01T00:00:00","value": 105},{"time":"2023-09-01T00:00:00","value": 112},{"time":"2024-01-01T00:00:00","value": 129}] }' http://localhost:8082/addReferenceIndex

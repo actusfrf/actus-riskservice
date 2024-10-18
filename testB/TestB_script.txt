@@ -1,0 +1,82 @@
+# Set up mongodb database riskdata 
+> mongo
+>> show dbs -> riskdata
+>> use riskdata
+>> db 		-> riskdata
+>> show collections ->  referenceIndex
+>> db.referenceIndex.drop() -> true
+>> show collections -> 
+# now empty riskdata database ready for tests
+
+*** long form test with insertion, retrieve, delete, findAll etc  
+> source putUst5Y_falling.txt
+> source putMSFT_rising.txt
+> curl -v http://localhost:8082/findAllReferenceIndexes
+> curl -v http://localhost:8082/findReferenceIndex/ust5Y_falling
+> curl -v http://localhost:8082/findReferenceIndex/MSFT_rising
+> curl -X DELETE http://localhost:8082/deleteReferenceIndex/MSFT_rising
+> curl -v http://localhost:8082/findReferenceIndex/MSFT_rising
+*** put MSFT_rising back
+> source putMSFT_rising.txt
+> curl -v http://localhost:8082/findReferenceIndex/MSFT_rising
+
+*** create prepayment model ppm01 and scenarios scn01, scn02
+***  scenarios scn01, scn02 both include ust5Y_falling and MSFT_rising 
+***  ppm01  is a Two parameter prepayment model available in scenario scn02 
+> source putPpm01.txt
+> source putScn01.txt
+> source putScn02.txt
+ 
+> curl -v http://localhost:8082/findAllScenarios
+> curl -v http://localhost:8082/findScenario/scn01
+> curl -X DELETE http://localhost:8082/deleteScenario/scn02
+> source putScn02.txt
+
+*** short form build from empty riskdata db 
+> source putUst5Y_falling.txt
+> source putMSFT_rising.txt
+> source putScn01.txt
+> curl -v http://localhost:8082/findAllScenarios
+> curl -v http://localhost:8082/findAllReferenceIndexes
+
+*** back test with standard actus /eventsBatch requests
+> source l3PAMnoRF.txt
+> source l3PAMwRF.txt
+> source l3ANNnoRF.txt
+> source l3ANNwRF.txt
+
+*** test actus /rf2/eventsBatch now with persistent market data
+> source scn01PAMnoRF_eb.txt
+> source scn01PAMwRF_eb.txt
+> source scn01ANNnoRF_eb.txt
+> source scn01ANNwRF_eb.txt
+
+*** test actus /rf2/scenarioSimulation  on scn01 which has no available behaviors
+> source scn01PAMnoRF_ss.txt
+> source scn01PAMwRF_ss.txt
+> source scn01ANNnoRF_ss.txt
+> source scn01ANNwRF_ss.txt
+
+*** create ppm01 Two dimensional prepayment model and scenario scn02 which makes it available 
+> source putPpm01.txt
+> source putScn02.txt
+
+*** now run scenario simulations with an activated prepayment model 
+> source ppm01PAMnoRF_ss.txt
+> source ppm01PAMwRF_ss.txt
+> source ppm01ANNnoRF_ss.txt
+> source ppm01ANNwRF_ss.txt
+
+*** run the _eb cases with scn02 ( no behaviors in eb simulation )
+> source scn02PAMnoRF_eb.txt
+> source scn02PAMwRF_eb.txt
+> source scn02ANNnoRF_eb.txt
+> source scn02ANNwRF_eb.txt
+
+*** the _ss cases with scn02 but no behavior activated
+> source scn02PAMnoRF_ss.txt
+> source scn02PAMwRF_ss.txt
+> source scn02ANNnoRF_ss.txt
+> source scn02ANNwRF_ss.txt
+
+ 

@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{"scenarioID": "scn02","riskFactorDescriptors":[{"riskFactorID":"ust5Y_falling","riskFactorType": "ReferenceIndex"},{"riskFactorID":"MSFT_rising","riskFactorType":"ReferenceIndex"},{"riskFactorID":"ppm01","riskFactorType":"TwoDimensionalPrepaymentModel"}]}' http://localhost:8082/addScenario
