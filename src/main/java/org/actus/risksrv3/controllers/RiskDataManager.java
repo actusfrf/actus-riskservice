@@ -6,6 +6,7 @@ import  org.actus.risksrv3.repository.ReferenceIndexStore;
 import  org.actus.risksrv3.repository.ScenarioStore;
 import  org.actus.risksrv3.repository.TwoDimensionalPrepaymentModelStore;
 import  org.springframework.beans.factory.annotation.Autowired;
+import  org.springframework.beans.factory.annotation.Value;
 import  org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,17 +22,35 @@ public class RiskDataManager {
 	@Autowired
 	private TwoDimensionalPrepaymentModelStore twoDimensionalPrepaymentModelStore;
 	
+	private
+	@Value("${spring.data.mongodb.host}")
+	String mongodbHost;
+	
+	private
+	@Value("${spring.data.mongodb.port}")
+	Integer mongodbPort;
+	
+	// demonstrate access to application properties 
+	@GetMapping("/propertiesMongoHost")
+	public String doPropertiesMongoHost ( ) {
+		return ( "Value of mongodbHost = " + mongodbHost + "\n");
+	}
+	
+	@GetMapping("/propertiesMongoPort")
+	public String doPropertiesMongoPort ( ) {
+		return ( "Value of mongodbPort = " + mongodbPort + "\n");
+	}
 	
 	@PostMapping("/addReferenceIndex")
     public String saveReferenceIndex(@RequestBody ReferenceIndex referenceIndex){
         referenceIndexStore.save(referenceIndex);      
-        return "ReferenceIndex added Successfully";
+        return "ReferenceIndex added Successfully\n";
     }	
 	// Path parameter id is ReferenceIndexID  i.e. riskFactorType == "ReferenceIndex" in any descriptor 
     @DeleteMapping("/deleteReferenceIndex/{id}")
     public String deleteReferenceIndex(@PathVariable String id){
         referenceIndexStore.deleteById(id);     
-        return "ReferenceIndex deleted Successfully";
+        return "ReferenceIndex deleted Successfully\n";
     }   
     @GetMapping("/findReferenceIndex/{id}")
     public Optional<ReferenceIndex> findReferenceIndex(@PathVariable String id) {
@@ -50,13 +69,13 @@ public class RiskDataManager {
 	@PostMapping("/addScenario")
     public String saveScenario(@RequestBody Scenario scenario){
         scenarioStore.save(scenario);      
-        return "Scenario added Successfully";
+        return "Scenario added Successfully\n";
     }	
 	// id is here a ScenarioID i.e. riskFactorType == "Scenario" in any descriptor
     @DeleteMapping("/deleteScenario/{id}")
     public String deleteScenario(@PathVariable String id){
         scenarioStore.deleteById(id);      
-        return "Scenario Deleted Successfully";
+        return "Scenario Deleted Successfully\n";
     }
     @GetMapping("/findScenario/{id}")
     public Optional<Scenario> findScenario(@PathVariable String id) {
@@ -74,13 +93,13 @@ public class RiskDataManager {
     public String saveTwoDimensionalPrepaymentModelData(
     		@RequestBody TwoDimensionalPrepaymentModelData twoDimensionalPrepaymentModelData){
         twoDimensionalPrepaymentModelStore.save(twoDimensionalPrepaymentModelData);      
-        return "TwoDimensionalPrepayment model added successfully";
+        return "TwoDimensionalPrepayment model added successfully\n";
     }	
 	// id is a TwoDimensionalPrepaymentModelID 
     @DeleteMapping("/deleteTwoDimensionalPrepaymentModel/{id}")
     public String deleteTwoDimensionalPrepaymentModel(@PathVariable String id){
         twoDimensionalPrepaymentModelStore.deleteById(id);      
-        return "TwoDimensionalPrepaymentModel deleted Successfully";
+        return "TwoDimensionalPrepaymentModel deleted Successfully\n";
     }
     @GetMapping("/findTwoDimensionalPrepaymentModel/{id}")
     public Optional<TwoDimensionalPrepaymentModelData> findTwoDimensionalPrepaymentModelData(@PathVariable String id) {
