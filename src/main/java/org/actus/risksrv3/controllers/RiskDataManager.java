@@ -2,9 +2,11 @@ package org.actus.risksrv3.controllers;
 import  org.actus.risksrv3.models.ReferenceIndex;
 import  org.actus.risksrv3.models.Scenario;
 import  org.actus.risksrv3.models.TwoDimensionalPrepaymentModelData;
+import  org.actus.risksrv3.models.TwoDimensionalDepositTrxModelData;
 import  org.actus.risksrv3.repository.ReferenceIndexStore;
 import  org.actus.risksrv3.repository.ScenarioStore;
 import  org.actus.risksrv3.repository.TwoDimensionalPrepaymentModelStore;
+import  org.actus.risksrv3.repository.TwoDimensionalDepositTrxModelStore;	
 import  org.springframework.beans.factory.annotation.Autowired;
 import  org.springframework.beans.factory.annotation.Value;
 import  org.springframework.web.bind.annotation.*;
@@ -21,6 +23,8 @@ public class RiskDataManager {
 	private ScenarioStore scenarioStore;
 	@Autowired
 	private TwoDimensionalPrepaymentModelStore twoDimensionalPrepaymentModelStore;
+	@Autowired
+	private TwoDimensionalDepositTrxModelStore twoDimensionalDepositTrxModelStore;
 	
 	private
 	@Value("${spring.data.mongodb.host}")
@@ -109,5 +113,29 @@ public class RiskDataManager {
     @GetMapping("/findAllTwoDimensionalPrepaymentModels")
     public List<TwoDimensionalPrepaymentModelData> getTwoDimensionalPrepaymentModels() {
         return twoDimensionalPrepaymentModelStore.findAll();
+    }
+    
+    // Path Parameter id is here a TwoParameterDepositTrxModelID 
+    //i.e.  a String riskFactorID with associated riskFactorType == "TwoDimensionalDepositTrxModel" 
+	@PostMapping("/addTwoDimensionalDepositTrxModel")
+    public String saveTwoDimensionalDepositTrxModelData(
+    		@RequestBody TwoDimensionalDepositTrxModelData twoDimensionalDepositTrxModelData){
+        twoDimensionalDepositTrxModelStore.save(twoDimensionalDepositTrxModelData);      
+        return "TwoDimensionalDepositTrx model added successfully\n";
+    }
+	// id is a TwoDimensionalDepositTrxModelID 
+    @DeleteMapping("/deleteTwoDimensionalDepositTrxModel/{id}")
+    public String deleteTwoDimensionalDepositTrxModel(@PathVariable String id){
+        twoDimensionalDepositTrxModelStore.deleteById(id);      
+        return "TwoDimensionalDepositTrx model deleted Successfully\n";
+    }
+    @GetMapping("/findTwoDimensionalDepositTrx/{id}")
+    public Optional<TwoDimensionalDepositTrxModelData> findTwoDimensionalDepositTrxModelData(@PathVariable String id) {
+    	 return  twoDimensionalDepositTrxModelStore.findById(id);
+    }
+    
+    @GetMapping("/findAllTwoDimensionalDepositTrxModels")
+    public List<TwoDimensionalDepositTrxModelData> getTwoDimensionalDepositTrxModels() {
+        return twoDimensionalDepositTrxModelStore.findAll();
     }
 }
