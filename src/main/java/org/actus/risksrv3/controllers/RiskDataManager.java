@@ -129,7 +129,7 @@ public class RiskDataManager {
         twoDimensionalDepositTrxModelStore.deleteById(id);      
         return "TwoDimensionalDepositTrx model deleted Successfully\n";
     }
-    @GetMapping("/findTwoDimensionalDepositTrx/{id}")
+    @GetMapping("/findTwoDimensionalDepositTrxModel/{id}")
     public Optional<TwoDimensionalDepositTrxModelData> findTwoDimensionalDepositTrxModelData(@PathVariable String id) {
     	 return  twoDimensionalDepositTrxModelStore.findById(id);
     }

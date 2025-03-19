@@ -1,8 +1,9 @@
 package org.actus.risksrv3.models;
 import java.util.List;
+import org.springframework.data.annotation.Id;
 
 public class TwoDimensionalDepositTrxModelData {
-    private String riskFactorId;
+    private @Id String riskFactorId;
     private List<String> depositTrxEventTimes;
     private TwoDimensionalLabelSurfaceData labelSurface;
 

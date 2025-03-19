@@ -42,7 +42,7 @@ public class TwoDimensionalDepositTrxModel implements BehaviorRiskModelProvider 
            this.dimension2Index.put(dim2Labels[i],Double.valueOf(i));
            dimension2Margins[i] = Double.valueOf(i) ;
            }
-        System.out.println("****fnp529 lookup date(0)= <" + dim2Labels[0] + "> .");   // fnp diagnostic mar 20253
+        // System.out.println("****fnp529 lookup date(0)= <" + dim2Labels[0] + "> .");   // fnp diagnostic mar 2023 - out mar2025
 
 		//      List<Double> dimension1Margins = data.getSurface().getMargins().get(0).getValues();
 		//      Double[] dimension2Margins = data.getSurface().getMargins().get(1).getValues().stream().map(obs -> obs).toArray(Double[]::new);
