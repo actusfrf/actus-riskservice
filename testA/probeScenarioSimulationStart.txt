@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{"scenarioID": "scn02", "scenarioType": "std"}' http://localhost:8082/scenarioSimulationStart
