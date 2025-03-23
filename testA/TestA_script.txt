@@ -51,3 +51,10 @@
  #contract activating dwx01
  > source contractSimulationStartDwx01.txt  # list dwx01 callout times received 
  > source activeBehaviorKeys.txt    # ["dwx01"]  now activated 
+ 
+ # now test /behaviorStateAt( )  with first callout time for contract ump001
+ > source contractSimulationStartUmp001.txt
+ # optional validations
+ > source behaviorStateAtUmp001.txt    # returns 1.5  => correct for deposit at this time 
+ 
+ 
