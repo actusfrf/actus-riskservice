@@ -31,7 +31,10 @@ public class MultiBehaviorRiskModel implements BehaviorRiskModelProvider {
 	}
 	
 	public List<CalloutData> contractStart(ContractModel contractModel){
-		// Get list of activated models from the parsed contract terms 
+		// This method is now deprecated - but required for implements BehaviorRiskModelProvider
+		// which is also deprecated and possible unnecessary 
+		
+		//Get list of activated models from the parsed contract terms 
 		// Relay on the caller to have checked that all behaviorModelIDs in the contract are defined for the scenario 
 		
 		// For each activated model: call contractStart(), add callout/observations to list 
@@ -44,6 +47,10 @@ public class MultiBehaviorRiskModel implements BehaviorRiskModelProvider {
 			 calloutData.addAll(model.get(mdl).contractStart(contractModel)); 
 		}
 		return calloutData;			
-	}		
+	}	
+	
+	public List<CalloutData> modelContractStart(ContractModel contractModel, String modelID){
+		return model.get(modelID).contractStart(contractModel);
+	}
 	
 }

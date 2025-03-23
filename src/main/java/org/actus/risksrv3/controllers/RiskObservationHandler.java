@@ -59,7 +59,7 @@ public class RiskObservationHandler {
 	private MultiBehaviorRiskModel 	currentBehaviorModel;
 	private HashSet<String>	        currentActivatedModels = new HashSet<String>();
 	
-// handler for /rf2/eventsBatch callout procesing 	
+// handler for /rf2/eventsBatch callout processing 	
 	@GetMapping("/marketData/{scid}")
 	MarketData  doMarketData (@PathVariable String scid) {
   	 	System.out.println("**** fnp200 entered /marketData/{scid} ; scid = " + scid);
@@ -185,19 +185,27 @@ public class RiskObservationHandler {
 		  // the MultiBehaviorRiskModel will get list of models to activate from contractModel
 		  // BUT we need to check here that all models referred to by the contract are in the scenario
 		  this.currentActivatedModels.clear();
-		  List<String> mdls = contractModel.getAs("prepaymentModels");
-		  List<CalloutData> observations;
-		  if (mdls != null ) {
-			  for (String mdl : mdls) {
-				  if ( currentBehaviorModel.keys().contains(mdl))
+		  List<String> ppmdls = contractModel.getAs("prepaymentModels");
+		  List<String> dwmdls = contractModel.getAs("depositTrxModels");
+		  
+		  // combine the two lists of model instance names 
+		  List<String> mdls = new ArrayList<String>() ;
+		  if (ppmdls != null) 
+			  mdls.addAll(ppmdls);
+		  if (dwmdls != null)
+			  mdls.addAll(dwmdls);
+		  // List<String> mdls = new ArrayList<String>(ppmdls);
+		  // mdls.addAll(dwmdls);
+		  
+		  List<CalloutData> observations = new ArrayList<CalloutData>();
+		  // Previously we checked for null as special case 
+		  for (String mdl : mdls) {
+			  if ( currentBehaviorModel.keys().contains(mdl))  {  // this model is found, is OK etc 
 					  currentActivatedModels.add(mdl);
-				  else
-					  throw new RiskModelNotFoundException("*** modelID: " + mdl + " in scenario: " + currentScenarioID);
+					  observations.addAll(currentBehaviorModel.modelContractStart(contractModel, mdl));
 			  }
-			  // MultiBehaviorRiskModel.contractStart will call activated models contractStart assuming all model ids checked 
-			  observations = currentBehaviorModel.contractStart(contractModel); 
-		  } else {
-			  observations = new ArrayList<CalloutData>(); // if no prepayment models return an empty list of calloutData 			  
+			  else
+					  throw new RiskModelNotFoundException("*** modelID: " + mdl + " in scenario: " + currentScenarioID);
 		  }
 	      return observations;
 	  }  	  
@@ -228,7 +236,6 @@ public class RiskObservationHandler {
 
 	  @GetMapping("/marketKeys") 
 	  HashSet<String> doMarketKeys() {	
-		  System.out.println("**** fnp210 in /marketKeys");
 		  Set<String> kset = this.currentMarketModel.keys();
 		  HashSet<String> hks = new HashSet<String>();
 		  for (String ks : kset) {
@@ -239,7 +246,6 @@ public class RiskObservationHandler {
 	  
 	  @GetMapping("/activeScenario")
 	  String doActiveScenario() {
-		  System.out.println("**** fnp211 in /activeScenario");
 		  String out;
 		  if (currentScenarioID == null)  {
 			  out = "No scenario currently active." ;
@@ -247,13 +253,11 @@ public class RiskObservationHandler {
 		  else { 
 			  out = "Currently activeScenario: " + currentScenarioID + "\n" ;	
 		  }
-		  System.out.println("**** fnp212  out = " + out );
 		  return out;	  
 	  }
 	  
 	  @GetMapping("/currentBehaviorKeys")
 	  HashSet<String> doCurrentBehaviorKeys(){
-		  System.out.println("**** fnp213 in /currentBehaviorKeys");
 		  Set<String> kset = this.currentBehaviorModel.keys();
 		  HashSet<String> hks = new HashSet<String>();
 		  for (String ks :kset) {
