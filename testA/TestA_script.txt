@@ -1,0 +1,53 @@
+# Tests for behavior model setup and DepositTrxModel behavior specifically
+
+# Clear the mongodb database riskdata for clean start
+> mongo
+>> use riskdata
+>> show collections  ; >> db.XXXX,drop()
+
+# Now populate for scenario Scn01
+> source ../testB/putUst5Y_falling.txt
+> source ../testB/putMSFT_rising.txt
+> source ../testB/putScn01.txt
+
+# probe scenarioSimulationStart - scn01 market only - and  contractSimulationStartNoBrf validate 
+ > source scenarioSimulationStartScn01.txt  # show scenario= scn01 marketKeys [MSFT,ust5Y]
+ > source contractSimulationStartNoBrf.txt  # show empty list of RiskCallout times returned 
+ > source activeScenario.txt  		# scn01
+ > source marketKeys.txt 	  		# [MSFT,ust05Y]
+ > source currentBehaviorKeys.txt 	# [ ]
+ > source activeBehaviorKeys.txt	# [ ] 
+ 
+ # scenarioSimulationStart - scn02 with noPPM and ppm01 contracts 
+ > source ../testB/putPpm01.txt
+ > source ../testB/putScn02.txt
+ > source scenarioSimulationStartScn02.txt
+ 
+ # contract with no BehaviorModel 
+ > source contractSimulationStartNoBrf.txt  # show empty list of RiskCallout times returned
+ > source activeScenario.txt  		# scn02
+ > source marketKeys.txt 	  		# [MSFT,ust05Y]
+ > source currentBehaviorKeys.txt 	# [ppm01 ]
+ > source activeBehaviorKeys.txt	# [ ] 
+ 
+ #contract activating ppm01
+ > source contractSimulationStartPpm01.txt  # list ppm01 callout times received 
+ > source activeBehaviorKeys.txt    # ["ppm01"]  now activated 
+ 
+ # setup for contract ump001
+ > source contractSimulationStartUmp001.txt
+ # scenarioSimulationStart - scn03  with  noDwx and dwx01 contracts 
+ > source putDwx01.txt
+ > source putScn03.txt
+ > source scenarioSimulationStartScn03.
+
+# contract with no BehaviorModel 
+ > source contractSimulationStartNoBrf.txt  # show empty list of RiskCallout times returned
+ > source activeScenario.txt  		# scn03
+ > source marketKeys.txt 	  		# [MSFT,ust05Y]
+ > source currentBehaviorKeys.txt 	# [dwx01 ]
+ > source activeBehaviorKeys.txt	# [ ] 
+ 
+ #contract activating dwx01
+ > source contractSimulationStartDwx01.txt  # list dwx01 callout times received 
+ > source activeBehaviorKeys.txt    # ["dwx01"]  now activated 

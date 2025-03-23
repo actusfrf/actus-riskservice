@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{ "riskFactorId":"dwx01","states": { "statusDate":"2023-06-01T00:00:01"} }' http://localhost:8082/behaviorStateAt
