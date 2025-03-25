@@ -15,6 +15,7 @@ import org.actus.risksrv3.models.CalloutData;
 import org.actus.risksrv3.core.attributes.ContractModel;
 
 public class TwoDimensionalPrepaymentModel implements BehaviorRiskModelProvider {
+	public static final String CALLOUT_TYPE = "MRD";  // MultiplicativeReductionDelta
 	String referenceRate;
 	String riskFactorId;
 	TimeSeries<Double,TimeSeries<Double,Double>> surface;
@@ -68,7 +69,7 @@ System.out.println("****fnp012 age=<" + String.valueOf(age) + ">; starting surfa
 		// create an events list 
 		List<CalloutData> cllds = new ArrayList<CalloutData>();
 		for (String ppevd : this.prepaymentEventTimes) {
-				 CalloutData clld = new  CalloutData(this.riskFactorId,ppevd);
+				 CalloutData clld = new  CalloutData(this.riskFactorId,ppevd, TwoDimensionalPrepaymentModel.CALLOUT_TYPE);
 				 cllds.add(clld);
 			 }
 		return cllds;	

@@ -13,6 +13,7 @@ import org.actus.risksrv3.models.CalloutData;
 import org.actus.risksrv3.models.TwoDimensionalDepositTrxModelData;
 
 public class TwoDimensionalDepositTrxModel implements BehaviorRiskModelProvider  {
+	public static final String CALLOUT_TYPE = "AFD";  // AbsoluteFundedDelta
 	String riskFactorId;
 	TimeSeries<Double,TimeSeries<Double,Double>> surface;
 	HashMap<String,Double> dimension1Index, dimension2Index;
@@ -87,7 +88,7 @@ public class TwoDimensionalDepositTrxModel implements BehaviorRiskModelProvider 
 		// create an events list 
 		List<CalloutData> cllds = new ArrayList<CalloutData>();
 		for (String dtevd : this.depositTrxEventTimes) {
-				 CalloutData clld = new  CalloutData(this.riskFactorId,dtevd);
+				 CalloutData clld = new  CalloutData(this.riskFactorId,dtevd, TwoDimensionalDepositTrxModel.CALLOUT_TYPE);
 				 cllds.add(clld);
 			 }
 		return cllds;	
