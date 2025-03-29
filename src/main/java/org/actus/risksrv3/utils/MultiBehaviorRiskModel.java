@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 import org.actus.risksrv3.core.states.StateSpace;
 import org.actus.risksrv3.models.CalloutData;
@@ -24,10 +25,10 @@ public class MultiBehaviorRiskModel implements BehaviorRiskModelProvider {
 		model.put(symbol,behaviorModel);
 	}
 
-	public double stateAt(String id, StateSpace state) {
+	public double stateAt(String id, LocalDateTime time, StateSpace state) {
 		System.out.println("** fnp061 in stateAt id = " + id );
 		System.out.println("** fnp062 model.get(id) = " + model.get(id).toString());
-		return model.get(id).stateAt(id,state);
+		return model.get(id).stateAt(id, time, state);
 	}
 	
 	public List<CalloutData> contractStart(ContractModel contractModel){

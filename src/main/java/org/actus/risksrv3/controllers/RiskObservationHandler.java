@@ -226,10 +226,11 @@ public class RiskObservationHandler {
 	  double doBehaviorStateAt(@RequestBody BehaviorStateAtInput behaviorStateAtInput) {
 		  String mdlid = behaviorStateAtInput.getRiskFactorId();
 		  System.out.println("**** fnp208: in  /behaviorStateAt id = "+ mdlid );
+		  LocalDateTime time = behaviorStateAtInput.getTime();
 		  StateSpace state = behaviorStateAtInput.getStates();
-		  double dval = this.currentBehaviorModel.stateAt(mdlid, state);
-		  System.out.println("**** fnp209: /behavior id = " + mdlid + " statusDate= "
-				     + state.statusDate.toString() + " nominalInterest= " 
+		  double dval = this.currentBehaviorModel.stateAt(mdlid, time, state);
+		  System.out.println("**** fnp209: /behavior id = " + mdlid + " time= "
+				     + time.toString() + " nominalInterest= " 
 				     + state.nominalInterestRate +   " value= " + dval );
 		  return dval;
 	  }

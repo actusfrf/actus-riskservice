@@ -42,6 +42,7 @@ public class TwoDimensionalDepositTrxModel implements BehaviorRiskModelProvider 
         for(int i=0; i < dim2Labels.length ; i++ ) {
            this.dimension2Index.put(dim2Labels[i],Double.valueOf(i));
            dimension2Margins[i] = Double.valueOf(i) ;
+           System.out.println("****fnp703 InsertingTwoDimensionalDepositTrxModel dim2Index value = " + dim2Labels[i]);   
            }
         // System.out.println("****fnp529 lookup date(0)= <" + dim2Labels[0] + "> .");   // fnp diagnostic mar 2023 - out mar2025
 
@@ -61,15 +62,16 @@ public class TwoDimensionalDepositTrxModel implements BehaviorRiskModelProvider 
         return Set.of(this.riskFactorId);
 		}
 
-    public double stateAt(String id, StateSpace states) {
+    public double stateAt(String id, LocalDateTime time, StateSpace states) {
     DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    LocalDateTime time = states.statusDate;
+    // LocalDateTime time = states.statusDate;
     String timeS = time.format(formatter);
-    System.out.println("****fnp520 TwoDimensionalDepositTrxModel stateAt() entered");       // fnp diagnostic jan 2023
+    System.out.println("****fnp520 TwoDimensionalDepositTrxModel stateAt() entered at time " + String.valueOf(time));       // fnp diagnostic jan 2023
+    System.out.println("****fnp702 formatted Time = " + timeS );
 
     //System.out.println("****fnp021 contractID = <" + contractID + "> time = <"+ String.valueOf(time)+">" ); // fnp diagnostic jan 2023
 
-    System.out.println("****fnp521 contractID = <" + this.contractID + "> time = <" + timeS + ">" ); // fnp diagnostic jan 2023
+    System.out.println("****fnp521 contractID = <" + this.contractID + "> time = <" + time + ">" ); // fnp diagnostic jan 2023
     Double dim1x = this.dimension1Index.get(this.contractID);
     System.out.println("****fnp522 dim1x = <" + String.valueOf(dim1x) + ">");       // fnp diagnostic jan 2023
     Double dim2x = this.dimension2Index.get(timeS);

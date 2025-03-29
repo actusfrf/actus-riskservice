@@ -52,9 +52,9 @@ public class TwoDimensionalPrepaymentModel implements BehaviorRiskModelProvider 
 	}
 	
 
-	public double stateAt(String id, StateSpace states) {
+	public double stateAt(String id, LocalDateTime time, StateSpace states) {
 System.out.println("****fnp009 TwoDimensionalPrepaymentModel stateAt() entered");  // fnp diagnostic jan 2023 
-        LocalDateTime time = states.statusDate;
+        // LocalDateTime time = states.statusDate;
 		double spread = states.nominalInterestRate - marketModel.stateAt(this.referenceRate,time);
                 if ( spread <= -0.045 ) { spread = -0.045 ; }  
 System.out.println("****fnp011  spread=<" + String.valueOf(spread) + ">; starting age computation");   	// fnp diagnostic jan 2023 	
