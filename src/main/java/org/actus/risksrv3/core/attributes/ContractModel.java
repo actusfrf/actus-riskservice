@@ -99,10 +99,13 @@ public class ContractModel implements ContractModelProvider{
             	map.put("contractID",attributes.get("contractID"));
             	map.put("contractType", attributes.get("contractType"));
             	map.put("initialExchangeDate", LocalDateTime.parse((String)attributes.get("initialExchangeDate")));
-            	List<String> mdls = (List<String>)attributes.get("prepaymentModels");
-            	System.out.println("**** fnp031: mdls = <" + mdls + ">");
-            	map.put("prepaymentModels", mdls);
-       
+            	List<String> ppmdls = (List<String>)attributes.get("prepaymentModels");
+            	System.out.println("**** fnp031: mdls = <" + ppmdls + ">");
+            	map.put("prepaymentModels", ppmdls);
+            	
+            	List<String> dwmdls = (List<String>)attributes.get("depositTrxModels");
+            	System.out.println("**** fnp032: dwmdls = <" + dwmdls + ">");
+            	map.put("depositTrxModels", dwmdls);
             } catch (Exception e) {
             throw new AttributeConversionException();
             }

@@ -17,6 +17,7 @@ import org.actus.risksrv3.models.MarketData;
 import org.actus.risksrv3.models.OldScenario;
 import org.actus.risksrv3.models.Scenario;
 import org.actus.risksrv3.models.TwoDimensionalPrepaymentModelData;
+import org.actus.risksrv3.models.TwoDimensionalDepositTrxModelData;
 import org.actus.risksrv3.models.ReferenceIndex;
 import org.actus.risksrv3.models.RiskFactorDescriptor;
 import org.actus.risksrv3.models.ScenarioDescriptor;
@@ -24,10 +25,12 @@ import org.actus.risksrv3.models.StateAtInput;
 import org.actus.risksrv3.repository.ReferenceIndexStore;
 import org.actus.risksrv3.repository.ScenarioStore;
 import org.actus.risksrv3.repository.TwoDimensionalPrepaymentModelStore;
+import org.actus.risksrv3.repository.TwoDimensionalDepositTrxModelStore;
 import org.actus.risksrv3.utils.MultiBehaviorRiskModel;
 import org.actus.risksrv3.utils.MultiMarketRiskModel;
 import org.actus.risksrv3.utils.TimeSeriesModel;
 import org.actus.risksrv3.utils.TwoDimensionalPrepaymentModel;
+import org.actus.risksrv3.utils.TwoDimensionalDepositTrxModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +49,8 @@ public class RiskObservationHandler {
 	private ScenarioStore scenarioStore;
 	@Autowired
 	private TwoDimensionalPrepaymentModelStore twoDimensionalPrepaymentModelStore;
+	@Autowired
+	private TwoDimensionalDepositTrxModelStore twoDimensionalDepositTrxModelStore;
 
 // local state attributes and objects 
 // these are the state variables used for processing simulation requests 
@@ -54,7 +59,7 @@ public class RiskObservationHandler {
 	private MultiBehaviorRiskModel 	currentBehaviorModel;
 	private HashSet<String>	        currentActivatedModels = new HashSet<String>();
 	
-// handler for /rf2/eventsBatch callout procesing 	
+// handler for /rf2/eventsBatch callout processing 	
 	@GetMapping("/marketData/{scid}")
 	MarketData  doMarketData (@PathVariable String scid) {
   	 	System.out.println("**** fnp200 entered /marketData/{scid} ; scid = " + scid);
@@ -143,8 +148,24 @@ public class RiskObservationHandler {
 					  throw new TwoDimensionalPrepaymentModelNotFoundException(rfxid);
 				  }
 			  }  
+			  else if (rfd.getRiskFactorType().equals("TwoDimensionalDepositTrxModel")) {
+				  Optional<TwoDimensionalDepositTrxModelData> odxmd =
+						  this.twoDimensionalDepositTrxModelStore.findById(rfxid);
+				  TwoDimensionalDepositTrxModelData dxmd;
+				  if (odxmd.isPresent()) {
+					  dxmd = odxmd.get();
+					  System.out.println("**** fnp207 found dxmd ; rfxid = " + rfxid);
+					  TwoDimensionalDepositTrxModel dxm = 
+								 new TwoDimensionalDepositTrxModel(rfxid, dxmd);
+					  currentBehaviorModel.add(rfxid, dxm);
+				  }
+				  else  {
+					  throw new TwoDimensionalDepositTrxModelNotFoundException(rfxid);
+				  }
+			  }  
+			  
 			  else {
-				  System.out.println("**** fnp2061 unrecognized rfType= " + rfd.getRiskFactorType() );
+				  System.out.println("**** fnp208 unrecognized rfType= " + rfd.getRiskFactorType() );
 			  }
 					  
 
@@ -164,19 +185,27 @@ public class RiskObservationHandler {
 		  // the MultiBehaviorRiskModel will get list of models to activate from contractModel
 		  // BUT we need to check here that all models referred to by the contract are in the scenario
 		  this.currentActivatedModels.clear();
-		  List<String> mdls = contractModel.getAs("prepaymentModels");
-		  List<CalloutData> observations;
-		  if (mdls != null ) {
-			  for (String mdl : mdls) {
-				  if ( currentBehaviorModel.keys().contains(mdl))
+		  List<String> ppmdls = contractModel.getAs("prepaymentModels");
+		  List<String> dwmdls = contractModel.getAs("depositTrxModels");
+		  
+		  // combine the two lists of model instance names 
+		  List<String> mdls = new ArrayList<String>() ;
+		  if (ppmdls != null) 
+			  mdls.addAll(ppmdls);
+		  if (dwmdls != null)
+			  mdls.addAll(dwmdls);
+		  // List<String> mdls = new ArrayList<String>(ppmdls);
+		  // mdls.addAll(dwmdls);
+		  
+		  List<CalloutData> observations = new ArrayList<CalloutData>();
+		  // Previously we checked for null as special case 
+		  for (String mdl : mdls) {
+			  if ( currentBehaviorModel.keys().contains(mdl))  {  // this model is found, is OK etc 
 					  currentActivatedModels.add(mdl);
-				  else
-					  throw new RiskModelNotFoundException("*** modelID: " + mdl + " in scenario: " + currentScenarioID);
+					  observations.addAll(currentBehaviorModel.modelContractStart(contractModel, mdl));
 			  }
-			  // MultiBehaviorRiskModel.contractStart will call activated models contractStart assuming all model ids checked 
-			  observations = currentBehaviorModel.contractStart(contractModel); 
-		  } else {
-			  observations = new ArrayList<CalloutData>(); // if no prepayment models return an empty list of calloutData 			  
+			  else
+					  throw new RiskModelNotFoundException("*** modelID: " + mdl + " in scenario: " + currentScenarioID);
 		  }
 	      return observations;
 	  }  	  
@@ -197,17 +226,17 @@ public class RiskObservationHandler {
 	  double doBehaviorStateAt(@RequestBody BehaviorStateAtInput behaviorStateAtInput) {
 		  String mdlid = behaviorStateAtInput.getRiskFactorId();
 		  System.out.println("**** fnp208: in  /behaviorStateAt id = "+ mdlid );
+		  LocalDateTime time = behaviorStateAtInput.getTime();
 		  StateSpace state = behaviorStateAtInput.getStates();
-		  double dval = this.currentBehaviorModel.stateAt(mdlid, state);
-		  System.out.println("**** fnp209: /behavior id = " + mdlid + " statusDate= "
-				     + state.statusDate.toString() + " nominalInterest= " 
+		  double dval = this.currentBehaviorModel.stateAt(mdlid, time, state);
+		  System.out.println("**** fnp209: /behavior id = " + mdlid + " time= "
+				     + time.toString() + " nominalInterest= " 
 				     + state.nominalInterestRate +   " value= " + dval );
 		  return dval;
 	  }
 
 	  @GetMapping("/marketKeys") 
 	  HashSet<String> doMarketKeys() {	
-		  System.out.println("**** fnp210 in /marketKeys");
 		  Set<String> kset = this.currentMarketModel.keys();
 		  HashSet<String> hks = new HashSet<String>();
 		  for (String ks : kset) {
@@ -218,7 +247,6 @@ public class RiskObservationHandler {
 	  
 	  @GetMapping("/activeScenario")
 	  String doActiveScenario() {
-		  System.out.println("**** fnp211 in /activeScenario");
 		  String out;
 		  if (currentScenarioID == null)  {
 			  out = "No scenario currently active." ;
@@ -226,13 +254,11 @@ public class RiskObservationHandler {
 		  else { 
 			  out = "Currently activeScenario: " + currentScenarioID + "\n" ;	
 		  }
-		  System.out.println("**** fnp212  out = " + out );
 		  return out;	  
 	  }
 	  
 	  @GetMapping("/currentBehaviorKeys")
 	  HashSet<String> doCurrentBehaviorKeys(){
-		  System.out.println("**** fnp213 in /currentBehaviorKeys");
 		  Set<String> kset = this.currentBehaviorModel.keys();
 		  HashSet<String> hks = new HashSet<String>();
 		  for (String ks :kset) {

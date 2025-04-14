@@ -15,6 +15,7 @@ import org.actus.risksrv3.models.CalloutData;
 import org.actus.risksrv3.core.attributes.ContractModel;
 
 public class TwoDimensionalPrepaymentModel implements BehaviorRiskModelProvider {
+	public static final String CALLOUT_TYPE = "MRD";  // MultiplicativeReductionDelta
 	String referenceRate;
 	String riskFactorId;
 	TimeSeries<Double,TimeSeries<Double,Double>> surface;
@@ -51,9 +52,9 @@ public class TwoDimensionalPrepaymentModel implements BehaviorRiskModelProvider 
 	}
 	
 
-	public double stateAt(String id, StateSpace states) {
+	public double stateAt(String id, LocalDateTime time, StateSpace states) {
 System.out.println("****fnp009 TwoDimensionalPrepaymentModel stateAt() entered");  // fnp diagnostic jan 2023 
-        LocalDateTime time = states.statusDate;
+        // LocalDateTime time = states.statusDate;
 		double spread = states.nominalInterestRate - marketModel.stateAt(this.referenceRate,time);
                 if ( spread <= -0.045 ) { spread = -0.045 ; }  
 System.out.println("****fnp011  spread=<" + String.valueOf(spread) + ">; starting age computation");   	// fnp diagnostic jan 2023 	
@@ -68,7 +69,7 @@ System.out.println("****fnp012 age=<" + String.valueOf(age) + ">; starting surfa
 		// create an events list 
 		List<CalloutData> cllds = new ArrayList<CalloutData>();
 		for (String ppevd : this.prepaymentEventTimes) {
-				 CalloutData clld = new  CalloutData(this.riskFactorId,ppevd);
+				 CalloutData clld = new  CalloutData(this.riskFactorId,ppevd, TwoDimensionalPrepaymentModel.CALLOUT_TYPE);
 				 cllds.add(clld);
 			 }
 		return cllds;	
