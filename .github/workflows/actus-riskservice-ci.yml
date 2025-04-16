@@ -14,11 +14,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-       
+
       - name: Checkout actus-core repository
         uses: actions/checkout@v3
         with:
-            repository: ${{ github.repository_owner }}/actus-core
+          repository: ${{ github.repository_owner }}/actus-core
           ref: ${{ github.ref_name }}
           path: actus-core
           fetch-depth: 1
