@@ -43,8 +43,8 @@ jobs:
           file: Dockerfile
           push: true
           tags: |
-            ${{ vars.DOCKER_USERNAME }}/actus-riskserver-ce:${{ github.ref_name }}
-            ${{ vars.DOCKER_USERNAME }}/actus-riskserver-ce:latest
+            actusfrf/actus-riskserver-ce:${{ github.ref_name }}
+            actusfrf/actus-riskserver-ce:latest
           platforms: linux/amd64,linux/arm64
 
   publish:
