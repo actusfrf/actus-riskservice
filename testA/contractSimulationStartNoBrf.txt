@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{"contractRole":"RPA","contractID":"Contract-noBrf","contractType":"PAM","statusDate":"2015-01-01T00:00:00","initialExchangeDate":"2015-01-02T00:00:00"}' http://localhost:8082/contractSimulationStart

@@ -2,6 +2,7 @@ package org.actus.risksrv3.utils;
 
 import java.util.Set;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import org.actus.risksrv3.core.states.StateSpace; 
 import org.actus.risksrv3.core.attributes.ContractModel;
@@ -29,5 +30,5 @@ public abstract interface  BehaviorRiskModelProvider {
 	   * @return double the state of the risk factor
 	   */
 	  
-	  public double stateAt(String id, StateSpace states); 
+	  public double stateAt(String id, LocalDateTime time, StateSpace states); 
 }

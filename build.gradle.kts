@@ -21,7 +21,7 @@ dependencies {
 implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	implementation("org.actus:actus-core:1.0.2-SNAPSHOT")
+        implementation("org.actus:actus-core:1.1.0")
 }
 
 tasks.withType<Test> {
