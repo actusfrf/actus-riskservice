@@ -1,6 +1,6 @@
 # System Tests for UMP contract simulations, DepositTrxModel behavior and scenario scn03 
 # These tests assume that TestB_script.txt tests have populated the riskdata database
-# ReferenceIndex data for ust05Y_falling and MSFT_rising is needed for scenario scn03 
+source dwx01UMPnoRF_ss.txt# ReferenceIndex data for ust05Y_falling and MSFT_rising is needed for scenario scn03 
 
 > cd actus-riskservice/testC 
 
@@ -16,3 +16,6 @@
 > source putDwx01.txt
 > source putScn03.txt 
 > source dwx01UMPnoRF_ss.txt
+
+# Test monitoring events 
+> source scn01PAMnoRFad_ss.txt
