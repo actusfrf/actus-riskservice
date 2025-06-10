@@ -18,10 +18,12 @@ import org.actus.risksrv3.models.OldScenario;
 import org.actus.risksrv3.models.Scenario;
 import org.actus.risksrv3.models.TwoDimensionalPrepaymentModelData;
 import org.actus.risksrv3.models.TwoDimensionalDepositTrxModelData;
+import org.actus.risksrv3.models.DepositWfeeTrxModelData;
 import org.actus.risksrv3.models.ReferenceIndex;
 import org.actus.risksrv3.models.RiskFactorDescriptor;
 import org.actus.risksrv3.models.ScenarioDescriptor;
 import org.actus.risksrv3.models.StateAtInput;
+import org.actus.risksrv3.repository.DepositWfeeTrxModelStore;
 import org.actus.risksrv3.repository.ReferenceIndexStore;
 import org.actus.risksrv3.repository.ScenarioStore;
 import org.actus.risksrv3.repository.TwoDimensionalPrepaymentModelStore;
@@ -31,6 +33,7 @@ import org.actus.risksrv3.utils.MultiMarketRiskModel;
 import org.actus.risksrv3.utils.TimeSeriesModel;
 import org.actus.risksrv3.utils.TwoDimensionalPrepaymentModel;
 import org.actus.risksrv3.utils.TwoDimensionalDepositTrxModel;
+import org.actus.risksrv3.utils.DepositWfeeTrxModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,6 +54,9 @@ public class RiskObservationHandler {
 	private TwoDimensionalPrepaymentModelStore twoDimensionalPrepaymentModelStore;
 	@Autowired
 	private TwoDimensionalDepositTrxModelStore twoDimensionalDepositTrxModelStore;
+	@Autowired
+	private DepositWfeeTrxModelStore depositWfeeTrxModelStore;
+	
 
 // local state attributes and objects 
 // these are the state variables used for processing simulation requests 
@@ -163,6 +169,21 @@ public class RiskObservationHandler {
 					  throw new TwoDimensionalDepositTrxModelNotFoundException(rfxid);
 				  }
 			  }  
+			  else if (rfd.getRiskFactorType().equals("DepositWfeeTrxModel")) {
+				  Optional<DepositWfeeTrxModelData> odwxmd =
+						  this.depositWfeeTrxModelStore.findById(rfxid);
+				  DepositWfeeTrxModelData dwxmd;
+				  if (odwxmd.isPresent()) {
+					  dwxmd = odwxmd.get();
+					  System.out.println("**** fnp207 found dwxmd ; rfxid = " + rfxid);
+					  DepositWfeeTrxModel dwxm = 
+								 new DepositWfeeTrxModel(rfxid, dwxmd.getContractDepositWfeeTrxs());
+					  currentBehaviorModel.add(rfxid, dwxm);
+				  }
+				  else  {
+					  throw new TwoDimensionalDepositTrxModelNotFoundException(rfxid);
+				  }
+			  }  
 			  
 			  else {
 				  System.out.println("**** fnp208 unrecognized rfType= " + rfd.getRiskFactorType() );
@@ -187,6 +208,7 @@ public class RiskObservationHandler {
 		  this.currentActivatedModels.clear();
 		  List<String> ppmdls = contractModel.getAs("prepaymentModels");
 		  List<String> dwmdls = contractModel.getAs("depositTrxModels");
+		  List<String> dfxmdls = contractModel.getAs("depositWfeeTrxModels");
 		  
 		  // combine the two lists of model instance names 
 		  List<String> mdls = new ArrayList<String>() ;
@@ -196,6 +218,9 @@ public class RiskObservationHandler {
 			  mdls.addAll(dwmdls);
 		  // List<String> mdls = new ArrayList<String>(ppmdls);
 		  // mdls.addAll(dwmdls);
+		  
+		  if (dfxmdls != null)
+			  mdls.addAll(dfxmdls);
 		  
 		  List<CalloutData> observations = new ArrayList<CalloutData>();
 		  // Previously we checked for null as special case 
@@ -207,6 +232,10 @@ public class RiskObservationHandler {
 			  else
 					  throw new RiskModelNotFoundException("*** modelID: " + mdl + " in scenario: " + currentScenarioID);
 		  }
+		  // Now we have to process calloutData for the DepositWFeeTrx Models which is handled differently 
+		  // actually not so differently  - it may be identical 
+		  
+		  
 	      return observations;
 	  }  	  
 

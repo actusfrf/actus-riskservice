@@ -3,10 +3,12 @@ import  org.actus.risksrv3.models.ReferenceIndex;
 import  org.actus.risksrv3.models.Scenario;
 import  org.actus.risksrv3.models.TwoDimensionalPrepaymentModelData;
 import  org.actus.risksrv3.models.TwoDimensionalDepositTrxModelData;
+import  org.actus.risksrv3.models.DepositWfeeTrxModelData;
 import  org.actus.risksrv3.repository.ReferenceIndexStore;
 import  org.actus.risksrv3.repository.ScenarioStore;
 import  org.actus.risksrv3.repository.TwoDimensionalPrepaymentModelStore;
-import  org.actus.risksrv3.repository.TwoDimensionalDepositTrxModelStore;	
+import  org.actus.risksrv3.repository.TwoDimensionalDepositTrxModelStore;
+import  org.actus.risksrv3.repository.DepositWfeeTrxModelStore;
 import  org.springframework.beans.factory.annotation.Autowired;
 import  org.springframework.beans.factory.annotation.Value;
 import  org.springframework.web.bind.annotation.*;
@@ -25,6 +27,8 @@ public class RiskDataManager {
 	private TwoDimensionalPrepaymentModelStore twoDimensionalPrepaymentModelStore;
 	@Autowired
 	private TwoDimensionalDepositTrxModelStore twoDimensionalDepositTrxModelStore;
+	@Autowired
+	private DepositWfeeTrxModelStore depositWfeeTrxModelStore;
 	
 	private
 	@Value("${spring.data.mongodb.host}")
@@ -90,15 +94,15 @@ public class RiskDataManager {
     public List<Scenario> getScenarios() {
         return scenarioStore.findAll();
     }
-    
-    // Path Parameter id is here a TwoParameterPrepaymentModelID 
-    //i.e.  a String riskFactorID  with associated riskFactorType == "TwoDimensionalPrepaymentModel" 
+     
 	@PostMapping("/addTwoDimensionalPrepaymentModel")
     public String saveTwoDimensionalPrepaymentModelData(
     		@RequestBody TwoDimensionalPrepaymentModelData twoDimensionalPrepaymentModelData){
         twoDimensionalPrepaymentModelStore.save(twoDimensionalPrepaymentModelData);      
         return "TwoDimensionalPrepayment model added successfully\n";
-    }	
+    }
+    // Path Parameter id is here a TwoParameterPrepaymentModelID 
+    //i.e.  a String riskFactorID  with associated riskFactorType == "TwoDimensionalPrepaymentModel"
 	// id is a TwoDimensionalPrepaymentModelID 
     @DeleteMapping("/deleteTwoDimensionalPrepaymentModel/{id}")
     public String deleteTwoDimensionalPrepaymentModel(@PathVariable String id){
@@ -114,16 +118,15 @@ public class RiskDataManager {
     public List<TwoDimensionalPrepaymentModelData> getTwoDimensionalPrepaymentModels() {
         return twoDimensionalPrepaymentModelStore.findAll();
     }
-    
-    // Path Parameter id is here a TwoParameterDepositTrxModelID 
-    //i.e.  a String riskFactorID with associated riskFactorType == "TwoDimensionalDepositTrxModel" 
+    // Post parameter for this is be a TwoDimensionalDepositTrxModelData 
 	@PostMapping("/addTwoDimensionalDepositTrxModel")
     public String saveTwoDimensionalDepositTrxModelData(
     		@RequestBody TwoDimensionalDepositTrxModelData twoDimensionalDepositTrxModelData){
         twoDimensionalDepositTrxModelStore.save(twoDimensionalDepositTrxModelData);      
         return "TwoDimensionalDepositTrx model added successfully\n";
     }
-	// id is a TwoDimensionalDepositTrxModelID 
+	// Path Parameter id is here a TwoParameterDepositTrxModelID 
+    //i.e.  a String riskFactorID with associated riskFactorType == "TwoDimensionalDepositTrxModel" 
     @DeleteMapping("/deleteTwoDimensionalDepositTrxModel/{id}")
     public String deleteTwoDimensionalDepositTrxModel(@PathVariable String id){
         twoDimensionalDepositTrxModelStore.deleteById(id);      
@@ -132,10 +135,35 @@ public class RiskDataManager {
     @GetMapping("/findTwoDimensionalDepositTrxModel/{id}")
     public Optional<TwoDimensionalDepositTrxModelData> findTwoDimensionalDepositTrxModelData(@PathVariable String id) {
     	 return  twoDimensionalDepositTrxModelStore.findById(id);
-    }
-    
+    }  
     @GetMapping("/findAllTwoDimensionalDepositTrxModels")
     public List<TwoDimensionalDepositTrxModelData> getTwoDimensionalDepositTrxModels() {
         return twoDimensionalDepositTrxModelStore.findAll();
     }
+    // Post parameter for this is be a DepositWfeeTrxModelData 
+	@PostMapping("/addDepositWfeeTrxModel")
+    public String saveDepositTrxModelData(
+    		@RequestBody DepositWfeeTrxModelData depositWfeeTrxModelData){
+        depositWfeeTrxModelStore.save(depositWfeeTrxModelData);      
+        return ("DepositWfeeTrx model with riskFactorID= <" + 
+        		depositWfeeTrxModelData.getRiskFactorID() + 
+        		"> added successfully\n");
+    }
+	// Path Parameter id is here a DepositWFeeTrxModelID  
+    //i.e.  a String riskFactorID with associated riskFactorType == "DepositWfeeTrxModel" 
+    @DeleteMapping("/deleteDepositWfeeTrxModel/{id}")
+    public String deleteDepositWfeeTrxModel(@PathVariable String id){
+        depositWfeeTrxModelStore.deleteById(id);      
+        return "DepositWfeeTrxModel with riskFactorID = <" + id + 
+        		"> deleted Successfully\n";
+    }
+    @GetMapping("/findDepositWfeeTrxModel/{id}")
+    public Optional<DepositWfeeTrxModelData> findDepositWfeeTrxModelData(@PathVariable String id) {
+    	 return  depositWfeeTrxModelStore.findById(id);
+    }
+    @GetMapping("/findAllDepositWfeeTrxModels")
+    public List<DepositWfeeTrxModelData> getDepositWfeeTrxModels() {
+        return depositWfeeTrxModelStore.findAll();
+    }
+    
 }
