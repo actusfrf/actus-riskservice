@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{"riskFactorID": "RFidDeFi 2025-06-11T13:42:27", "contractDepositWfeeTrxs": [ { "contractID": "0x36DA15d9ba91da0411c68101A7770ab115098E21", "depositWfeeTrxs": [{"time": "2025-01-02T12:10:11", "depositAmount": 0.9665846121954543, "transactionFeeAmount": 0.001549404489096288}]}]}' http://localhost:8082/addDepositWfeeTrxModel
