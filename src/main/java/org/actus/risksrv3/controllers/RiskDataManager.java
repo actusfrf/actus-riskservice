@@ -37,7 +37,7 @@ public class RiskDataManager {
 	// demonstrate access to application properties 
 	@GetMapping("/propertiesMongoHost")
 	public String doPropertiesMongoHost ( ) {
-		return ( "Value of mongodbHost = " + mongodbHost + "\n");
+	    return ( "Value of mongodbHost = " + mongodbHost + "\n");
 	}
 	
 	@GetMapping("/propertiesMongoPort")
