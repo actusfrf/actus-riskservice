@@ -12,10 +12,17 @@ source dwx01UMPnoRF_ss.txt# ReferenceIndex data for ust05Y_falling and MSFT_risi
 > source scn01UMPnoRF_ss.txt
 > source scn01UMPwRF_ss.txt
 
-# Set up scenario scn03 Including DepositTrx model dwx01 - testAFD transactions 
+# Set up scenario scn03 Including DepositTrxModel dwx01 - testAFD transactions 
 > source putDwx01.txt
 > source putScn03.txt 
 > source dwx01UMPnoRF_ss.txt
+
+# now set up scn04 including depositwFeeTrxModel dfx01.txt
+# th noINTerest case shows more clearly the transactional updating 
+> source putDfx01.txt
+> source putScn04.txt
+> source dfx01UMPnoRF.txt
+> source dfx01UMPnoINT.txt
 
 # Test monitoring events 
 > source scn01PAMnoRFad_ss.txt

@@ -75,7 +75,7 @@ public class DepositWfeeTrxModel implements BehaviorRiskModelProvider {
     
     	DepositWfeeTrx dwt = this.currentContractTrxs.get(timeS);
     	Double trxAmt = dwt.getDepositAmount();
-    	if (dwt.getDepositAmount() < 0 ) trxAmt -= dwt.getTransactionFeeAmount();
+    	if (dwt.getDepositAmount() <= 0 ) trxAmt -= dwt.getTransactionFeeAmount();
     
     	return trxAmt;  
     }
