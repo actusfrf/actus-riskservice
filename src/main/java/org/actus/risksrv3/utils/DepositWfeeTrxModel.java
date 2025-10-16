@@ -74,8 +74,8 @@ public class DepositWfeeTrxModel implements BehaviorRiskModelProvider {
     // possible error for missing date ( actually this should not happen  TBD *** ? 
     
     	DepositWfeeTrx dwt = this.currentContractTrxs.get(timeS);
-    	Double trxAmt = dwt.getDepositAmount();
-    	if (dwt.getDepositAmount() <= 0 ) trxAmt -= dwt.getTransactionFeeAmount();
+    	Double trxAmt = dwt.getDepositAmount() -  dwt.getTransactionFeeAmount();
+    // 	if (dwt.getDepositAmount() <= 0 ) trxAmt -= dwt.getTransactionFeeAmount();
     
     	return trxAmt;  
     }
