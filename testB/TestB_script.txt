@@ -80,4 +80,6 @@
 > source scn02ANNnoRF_ss.txt
 > source scn02ANNwRF_ss.txt
 
- 
+ *** ACTUS-CORE update tests
+ > source l3STKdvnp14.txt         ** check for periodic dividend payments of $32.86
+ > source l3PAMnoRFmf.txt         ** check for Monday to friday calendar 
