@@ -77,7 +77,7 @@
 *** the _ss cases with scn02 but no behavior activated
 > source scn02PAMnoRF_ss.txt
 > source scn02PAMwRF_ss.txt
-> source scn02PAMwRF_ss.txt
+> source scn02ANNnoRF_ss.txt
 > source scn02ANNwRF_ss.txt
 
  *** ACTUS-CORE update tests
