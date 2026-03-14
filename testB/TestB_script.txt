@@ -24,7 +24,7 @@
 ***  scenarios scn01, scn02 both include ust5Y_falling and MSFT_rising 
 ***  ppm01  is a Two parameter prepayment model available in scenario scn02 
 > source putPpm01.txt
-> source putScn01.txt
+> source putPpm01.txt
 > source putScn02.txt
  
 > curl -v http://localhost:8082/findAllScenarios
@@ -83,3 +83,6 @@
  *** ACTUS-CORE update tests
  > source l3STKdvnp14.txt         ** check for periodic dividend payments of $32.86
  > source l3PAMnoRFmf.txt         ** check for Monday to friday calendar 
+ > source ../testD/l3com01.txt
+ > source  ../testD/l3PAMipac01.txt
+ 	
