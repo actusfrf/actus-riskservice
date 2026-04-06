@@ -24,7 +24,7 @@
 ***  scenarios scn01, scn02 both include ust5Y_falling and MSFT_rising 
 ***  ppm01  is a Two parameter prepayment model available in scenario scn02 
 > source putPpm01.txt
-> source putPpm01.txt
+> source putScn01.txt
 > source putScn02.txt
  
 > curl -v http://localhost:8082/findAllScenarios
