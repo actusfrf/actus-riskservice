@@ -60,6 +60,7 @@
 
 *** create ppm01 Two dimensional prepayment model and scenario scn02 which makes it available 
 > source putPpm01.txt
+> source putScn01.txt
 > source putScn02.txt
 
 *** now run scenario simulations with an activated prepayment model 
