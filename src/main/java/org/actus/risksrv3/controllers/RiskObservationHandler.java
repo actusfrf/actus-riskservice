@@ -1,6 +1,7 @@
 package org.actus.risksrv3.controllers;
 
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.actus.risksrv3.core.states.StateSpace;
 import org.actus.risksrv3.models.BatchStartInput;
 import org.actus.risksrv3.models.BehaviorStateAtInput;
 import org.actus.risksrv3.models.CalloutData;
+import org.actus.risksrv3.models.CreditRiskModelData;
 import org.actus.risksrv3.models.MarketData;
 import org.actus.risksrv3.models.OldScenario;
 import org.actus.risksrv3.models.Scenario;
@@ -25,12 +27,16 @@ import org.actus.risksrv3.models.StateAtInput;
 import org.actus.risksrv3.repository.ReferenceIndexStore;
 import org.actus.risksrv3.repository.ScenarioStore;
 import org.actus.risksrv3.repository.TwoDimensionalPrepaymentModelStore;
+import org.actus.risksrv3.time.CalloutScheduleFactory;
 import org.actus.risksrv3.repository.TwoDimensionalDepositTrxModelStore;
+import org.actus.risksrv3.repository.CreditRiskModelStore;
 import org.actus.risksrv3.utils.MultiBehaviorRiskModel;
 import org.actus.risksrv3.utils.MultiMarketRiskModel;
 import org.actus.risksrv3.utils.TimeSeriesModel;
 import org.actus.risksrv3.utils.TwoDimensionalPrepaymentModel;
 import org.actus.risksrv3.utils.TwoDimensionalDepositTrxModel;
+import org.actus.risksrv3.utils.TestCreditRiskModel;
+import org.actus.risksrv3.utils.CreditRiskModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -51,7 +57,9 @@ public class RiskObservationHandler {
 	private TwoDimensionalPrepaymentModelStore twoDimensionalPrepaymentModelStore;
 	@Autowired
 	private TwoDimensionalDepositTrxModelStore twoDimensionalDepositTrxModelStore;
-
+    @Autowired
+    private CreditRiskModelStore creditRiskModelStore;
+	
 // local state attributes and objects 
 // these are the state variables used for processing simulation requests 
 	private String					currentScenarioID = null;
@@ -162,7 +170,23 @@ public class RiskObservationHandler {
 				  else  {
 					  throw new TwoDimensionalDepositTrxModelNotFoundException(rfxid);
 				  }
-			  }  
+				  
+			  }
+			  else if (rfd.getRiskFactorType().equals("CreditRiskModel")){
+				 Optional<CreditRiskModelData> ocrmd = 
+						 this.creditRiskModelStore.findById(rfxid);
+				 CreditRiskModelData crmd;
+				 if (ocrmd.isPresent()) {
+					 crmd = ocrmd.get();
+					 System.out.println("**** fnp208 found crmd ; rfxid = " + rfxid);
+					 CreditRiskModel crm =
+							 	new CreditRiskModel(rfxid,crmd);
+					 currentBehaviorModel.add(rfxid, crm);
+				 }
+				 else  {
+					  throw new CreditRiskModelNotFoundException(rfxid);
+				  }
+			  }
 			  
 			  else {
 				  System.out.println("**** fnp208 unrecognized rfType= " + rfd.getRiskFactorType() );
@@ -187,6 +211,7 @@ public class RiskObservationHandler {
 		  this.currentActivatedModels.clear();
 		  List<String> ppmdls = contractModel.getAs("prepaymentModels");
 		  List<String> dwmdls = contractModel.getAs("depositTrxModels");
+		  List<String> crmdls = contractModel.getAs("creditRiskModels");
 		  
 		  // combine the two lists of model instance names 
 		  List<String> mdls = new ArrayList<String>() ;
@@ -194,6 +219,8 @@ public class RiskObservationHandler {
 			  mdls.addAll(ppmdls);
 		  if (dwmdls != null)
 			  mdls.addAll(dwmdls);
+		  if (crmdls != null)
+			  mdls.addAll(crmdls);
 		  // List<String> mdls = new ArrayList<String>(ppmdls);
 		  // mdls.addAll(dwmdls);
 		  
@@ -273,4 +300,42 @@ public class RiskObservationHandler {
 	      return this.currentActivatedModels;
 	  }
 	  
+	  // testing entry for developing a credit default service 
+	  @GetMapping("/testCreditRiskModel/{mode}")
+	  String doTestCreditRiskModel(@PathVariable String mode) {
+		  String s;
+		  if (mode.equals("default")) {
+			  s = "Response from doTestCrediRiskModel" + "\n" ;
+			  TestCreditRiskModel mdl =  new TestCreditRiskModel("PAM001",43) ;
+			  s += "contractID= "+ mdl.getContractID() + " scen# = "+ mdl.getScenarioInstance()+"\n";
+			  s += " hashValue = "+ mdl.getHashValue() + "\n";
+			  // mdl.rehash();
+			  s+= " after rehash hashValue = "+ mdl.getHashValue() + "\n";
+			  mdl = new TestCreditRiskModel("PAM001",41);
+			  s += "contractID= "+ mdl.getContractID() + " scen# = "+ mdl.getScenarioInstance()+"\n";
+			  s += " hashValue = "+ mdl.getHashValue() + "\n";
+			  s += " default ? " ;
+			  for ( int i = 1; i < 13; i ++  ) {
+				  s +=  mdl.inDefault() + " " ;
+				  // s +=  mdl.getHashValue() + " ";
+			  }
+			  s += "\n";
+		  }
+		  else if (mode.equals("schedule")) { 
+			  s = "Response from schedule test mode = schedule \n";
+			  String startIso = "2026-08-04T00:00:00";
+			  String endIso = "2028-12-31T00:00:00";
+			  String  cycle = "P6M";
+			  LocalDateTime startDate = LocalDateTime.parse(startIso);
+			  LocalDateTime endDate = LocalDateTime.parse(endIso);
+			  Period period = Period.parse(cycle);
+			  s += "start = " + startDate + " end = "+ endDate + "period = "+ period + "\n";
+			  Set<LocalDateTime>  calloutDates = CalloutScheduleFactory.createCalloutSchedule(startDate, endDate, period);
+			  s += "Callouts = " + calloutDates + "/n";
+		  }
+		  else {
+			  s = "Unrecognized request to /testCreditRiskModel/mode \n";
+		  }
+		  return s;
+	  }
 }

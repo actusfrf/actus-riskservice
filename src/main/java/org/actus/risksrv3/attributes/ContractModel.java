@@ -80,7 +80,7 @@ public class ContractModel implements ContractModelProvider{
      * for details.
      *
      * @param contractAttributes an external, raw (String) data representation of the set of attributes
-     * @return an instance of ContractModel containing the attributes provided with the method argument
+     * @return an instance of ContractModel containing the attributes provided with the method argumenttatusDate
      * @throws AttributeConversionException if an attribute cannot be parsed to its data type
      */
     public static ContractModel parse(Map<String, Object> contractAttributes) {
@@ -93,10 +93,16 @@ public class ContractModel implements ContractModelProvider{
             	map.put("contractID",attributes.get("contractID"));
             	map.put("contractType", attributes.get("contractType"));
             	map.put("initialExchangeDate", LocalDateTime.parse((String)attributes.get("initialExchangeDate")));
-            	List<String> mdls = (List<String>)attributes.get("prepaymentModels");
-            	System.out.println("**** fnp031: mdls = <" + mdls + ">");
-            	map.put("prepaymentModels", mdls);
-       
+            	List<String> ppmdls = (List<String>)attributes.get("prepaymentModels");
+            	System.out.println("**** fnp031: ppmdls = <" + ppmdls + ">");
+            	map.put("prepaymentModels", ppmdls);
+               //	attributes for CreditRiskModel behaviors; statusDate always required ; maturityDate
+            	map.put("statusDate", LocalDateTime.parse((String)attributes.get("statusDate"))) ;
+            	map.put("maturityDate", LocalDateTime.parse((String)attributes.get("maturityDate"))); 
+            	List<String> crmdls = (List<String>)attributes.get("creditRiskModels");
+            	map.put("creditRiskModels", crmdls);
+            	System.out.println("**** fnp502: crmdls = <" + crmdls + ">");
+            	
             } catch (Exception e) {
             throw new AttributeConversionException();
             }

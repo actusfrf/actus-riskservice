@@ -3,7 +3,7 @@ package org.actus.risksrv3.models;
 public class RiskFactorDescriptor {
 	// attributes
 	private String riskFactorID;     // key into RiskFactor store
-	private String riskFactorType;   // extensible set of rf types (market, prepaymentModel) for now 
+	private String riskFactorType;   // extensible set of rf types (market, prepaymentModel, creditRiskModel) for now 
 	
 	public RiskFactorDescriptor() {	
 	}

@@ -1,0 +1,1 @@
+curl -v -H 'Content-Type: application/json'  --data '{"riskFactorId": "CR6M_sometimes","calloutPeriod": "P6M","defaultProbability": 0.5 }' http://localhost:8082/addCreditRiskModel

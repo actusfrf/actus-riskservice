@@ -99,6 +99,11 @@ public class ContractModel implements ContractModelProvider{
             	map.put("contractID",attributes.get("contractID"));
             	map.put("contractType", attributes.get("contractType"));
             	map.put("initialExchangeDate", LocalDateTime.parse((String)attributes.get("initialExchangeDate")));
+            // add statusDate and maturityDate used by CreditRiskModel 
+            // probably should be used by all behaviors for scheduling callouts 
+            	map.put("statusDate", attributes.get("statusDate"));          	
+            	map.put("maturityDate", attributes.get("maturityDate"));        
+            	
             	List<String> ppmdls = (List<String>)attributes.get("prepaymentModels");
             	System.out.println("**** fnp031: mdls = <" + ppmdls + ">");
             	map.put("prepaymentModels", ppmdls);
@@ -106,11 +111,14 @@ public class ContractModel implements ContractModelProvider{
             	List<String> dwmdls = (List<String>)attributes.get("depositTrxModels");
             	System.out.println("**** fnp032: dwmdls = <" + dwmdls + ">");
             	map.put("depositTrxModels", dwmdls);
+            	
+            	List<String> crmdls = (List<String>)attributes.get("creditRiskModels");
+            	System.out.println("**** fnp033: crmdls = <" + crmdls + ">");
+            	map.put("creditRiskModels", crmdls);
             } catch (Exception e) {
             throw new AttributeConversionException();
             }
        
            return new ContractModel(map);
-}
-    
+   }   
 }
