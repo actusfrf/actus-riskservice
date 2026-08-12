@@ -5,6 +5,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.Objects;
 
 import org.actus.risksrv3.core.attributes.ContractModel;
 import org.actus.risksrv3.core.states.StateSpace;
@@ -19,8 +20,10 @@ public class CreditRiskModel implements BehaviorRiskModelProvider {
 	private String riskFactorId;
 	private String calloutPeriod;     	// callout periodicity eg "P9M"
 	private Double defaultProbability;	// probability of default on each callout 
-	private String statusDate;
-	private String maturityDate;
+	private String scenarioId;  		// want different default behavior per scenario
+	private String statusDate;			// use to set periodic callout schedule
+	private String maturityDate;        // use to set periodic callout behavior 
+	private String contractId; 			// want different behavior per contract 
 
 	public CreditRiskModel () {
 		}
@@ -31,10 +34,11 @@ public class CreditRiskModel implements BehaviorRiskModelProvider {
 		this.defaultProbability = defaultProbability;
 	}
 // this is the constructor which is used - riskFactorIdCreditRiskModelData as input 	
-	public CreditRiskModel ( String riskFactorId, CreditRiskModelData crmdd) {
+	public CreditRiskModel ( String riskFactorId, CreditRiskModelData crmdd, String scenarioId) {
 		this.riskFactorId  = crmdd.getRiskFactorId();
 		this.calloutPeriod = crmdd.getCalloutPeriod();
 		this.defaultProbability = crmdd.getDefaultProbability();
+		this.scenarioId = scenarioId;
 	}
 	
 	public Set<String> keys() {
@@ -43,7 +47,8 @@ public class CreditRiskModel implements BehaviorRiskModelProvider {
 	
 	public double stateAt(String id, LocalDateTime time, StateSpace states) {
 		// stateAt will return 1.0 if default 0.0 if no default use: stateAt > 0.5 for boolean default
- 	    double result = 1.0;   		
+		Integer ih  = Objects.hashCode(time.toString()+ this.scenarioId + this.contractId ) ;
+ 	    double result =  (ih % 101) / 101.0 ;   		
 		return result ;
 	}
 	
@@ -53,6 +58,7 @@ public class CreditRiskModel implements BehaviorRiskModelProvider {
 		// pickup the status and maturity dates from contract
 		this.statusDate = contract.getAs("statusDate");
 		this.maturityDate = contract.getAs("maturityDate"); 
+		this.contractId  = contract.getAs("contractID");  // now all set for behaviorStateAt()
 		
 		LocalDateTime startDate = LocalDateTime.parse(this.statusDate);
 		LocalDateTime endDate = LocalDateTime.parse(this.maturityDate);		

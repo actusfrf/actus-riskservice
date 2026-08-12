@@ -180,7 +180,7 @@ public class RiskObservationHandler {
 					 crmd = ocrmd.get();
 					 System.out.println("**** fnp208 found crmd ; rfxid = " + rfxid);
 					 CreditRiskModel crm =
-							 	new CreditRiskModel(rfxid,crmd);
+							 	new CreditRiskModel(rfxid,crmd, currentScenarioID);
 					 currentBehaviorModel.add(rfxid, crm);
 				 }
 				 else  {
